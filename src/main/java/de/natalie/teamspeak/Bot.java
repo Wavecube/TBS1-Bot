@@ -15,15 +15,22 @@ public class Bot {
     config.setQueryPort( port );
   }
 
-  public void login( String username, String password, int v_server_id ){
+  public Bot login( String username, String password, int vServerId ){
     query.connect();
     api.login( username, password );
-    api.selectVirtualServerById( v_server_id );
+    api.selectVirtualServerById( vServerId );
+    return this;
   }
 
-  public void login( String password , int v_server_id){
+  public Bot login( String password , int vServerId){
     api.login( "serveradmin", password );
-    api.selectVirtualServerById( v_server_id );
+    api.selectVirtualServerById( vServerId );
+    return this;
+  }
+
+  public Bot nickname(String nickname){
+    api.setNickname( nickname );
+    return this;
   }
 
   public TS3Api api(){

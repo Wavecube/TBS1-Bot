@@ -1,0 +1,16 @@
+<teamspeak>
+    <example_bot_1>
+        <host>192.168.2.130</host>
+        <port>10011</port>
+        <user>serveradmin</user>
+        <password>password</password>
+        <server-id>1</server-id>
+    </example_bot_1>
+    <example_bot_2>
+        <host>192.168.2.130</host>
+        <port>10011</port>
+        <user>serveradmin</user>
+        <password>password</password>
+        <server-id>1</server-id>
+    </example_bot_2>
+</teamspeak>
