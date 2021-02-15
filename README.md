@@ -15,4 +15,4 @@ Discord und Teams die Möglichkeit bietet auf bestimmte Funktionen zuzugreifen.
 * **In bearbeitung:**
   *
 * **Implementiert:**
-    * None
+    * AFK-Mover
