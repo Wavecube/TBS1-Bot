@@ -5,6 +5,7 @@ import com.github.theholywaffle.teamspeak3.api.wrapper.Client;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 public class AfkMover implements Runnable {
@@ -12,11 +13,13 @@ public class AfkMover implements Runnable {
   private final TS3Api api;
   private static final HashMap<Integer, Integer> moved = new HashMap<>();
   private static final HashMap<Client, Long> afk = new HashMap<>();
-  private final int afk_channel = 2;    // <-- Muss noch übergeben werden.
-  private final int afk_millis = 2000;  // <-- Muss noch übergeben werden.
+  private final int channel;
+  private final int time;
 
-  public AfkMover( TS3Api api ) {
+  public AfkMover( TS3Api api, Properties p ) {
     this.api = api;
+    channel = Integer.parseInt( p.getProperty( "afkChannel" ));
+    time = Integer.parseInt( p.getProperty( "afkTime" ));
   }
 
   @Override
@@ -31,16 +34,15 @@ public class AfkMover implements Runnable {
         .forEach( c -> afk.put( c, System.currentTimeMillis() ) );
 
     clients.stream()
-        .filter( c -> !c.isOutputMuted() || c.getChannelId() == afk_channel )
+        .filter( c -> !c.isOutputMuted() || c.getChannelId() == channel )
         .forEach( afk::remove );
 
     for ( Client c : afk.keySet() )
-      if ( c.getChannelId() != afk_channel && (afk.get( c ) + afk_millis) >= System
+      if ( c.getChannelId() != channel && (afk.get( c ) + time) >= System
           .currentTimeMillis() ) {
         moved.put( c.getId(), c.getChannelId() );
         afk.remove( c );
-        api.moveClient( c.getId(), afk_channel );
-        moved.forEach( (( client, integer ) -> System.out.println( client )) );
+        api.moveClient( c.getId(), channel );
       }
 
     api.getClients().stream()

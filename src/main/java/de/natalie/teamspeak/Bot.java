@@ -4,6 +4,7 @@ import com.github.theholywaffle.teamspeak3.TS3Api;
 import com.github.theholywaffle.teamspeak3.TS3Config;
 import com.github.theholywaffle.teamspeak3.TS3Query;
 
+import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -13,45 +14,35 @@ public class Bot {
   private final TS3Config config = new TS3Config();
   private final TS3Query query = new TS3Query( config );
   private final TS3Api api = query.getApi();
+  private final Properties p;
 
-  public Bot( String host, int port ) {
-    config.setHost( host );
-    config.setQueryPort( port );
+  public Bot( Properties p ) {
+    this.p = p;
+    config.setHost( p.getProperty( "host" ) );
+    config.setQueryPort( Integer.parseInt( p.getProperty( "port" ) ) );
+
+    login();
+    run();
   }
 
-  public Bot login( String username, String password, int vServerId ) {
+  private void login() {
     query.connect();
-    api.login( username, password );
-    api.selectVirtualServerById( vServerId );
-    return this;
+    api.login( p.getProperty( "user" ), p.getProperty( "password" ) );
+    api.selectVirtualServerById( Integer.parseInt( p.getProperty( "vServerId" ) ) );
+    api.setNickname( p.getProperty( "nickname" ) );
+    p.put( "defaultChannel", String.valueOf( api.whoAmI().getChannelId()));
   }
 
-  public Bot login( String password, int vServerId ) {
-    api.login( "serveradmin", password );
-    api.selectVirtualServerById( vServerId );
-    return this;
-  }
+  private void run() {
+    int t = Integer.parseInt( p.getProperty( "schedulerTiming" ) );
+    ScheduledExecutorService scheduler = Executors.newScheduledThreadPool( 3 );
 
-  public Bot nickname( String nickname ) {
-    api.setNickname( nickname );
-    return this;
-  }
-
-  public TS3Api api() {
-    return api;
-  }
-
-  public void runFeatures() {
-    runSchedulers();
-  }
-
-  private void runSchedulers() {
-    ScheduledExecutorService scheduler = Executors.newScheduledThreadPool( 1 );
-    //scheduler.scheduleAtFixedRate( new AfkMover( api ), 0, 2, TimeUnit.SECONDS );
-    //scheduler.scheduleAtFixedRate( new BotMover( api ), 0, 2, TimeUnit.SECONDS );
-    scheduler.scheduleAtFixedRate( new StreamingChannel( api ), 0, 2, TimeUnit.SECONDS );
-
-
+    if ( p.getProperty( "afkMoverEnabled" ).equalsIgnoreCase( "true" ) )
+      scheduler.scheduleAtFixedRate( new AfkMover( api, p ), 0, t, TimeUnit.SECONDS );
+    if ( p.getProperty( "botMoverEnabled" ).equalsIgnoreCase( "true" ) )
+      scheduler.scheduleAtFixedRate( new BotMover( api, p ), 0, t, TimeUnit.SECONDS );
+    if ( p.getProperty( "streamingChannelEnabled" ).equalsIgnoreCase( "true" ) )
+      scheduler.scheduleAtFixedRate( new StreamingChannel( api, p ), 0, t, TimeUnit.SECONDS );
   }
 
 }

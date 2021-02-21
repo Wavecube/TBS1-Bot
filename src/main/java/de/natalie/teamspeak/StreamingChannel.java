@@ -2,33 +2,25 @@ package de.natalie.teamspeak;
 
 import com.github.theholywaffle.teamspeak3.TS3Api;
 import com.github.theholywaffle.teamspeak3.api.ChannelProperty;
-import com.github.theholywaffle.teamspeak3.api.wrapper.Channel;
 import com.github.theholywaffle.teamspeak3.api.wrapper.Client;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class StreamingChannel implements Runnable {
 
   private final TS3Api api;
   private final List<Integer> sc = new ArrayList<>();
+  private final Properties p;
 
-  public StreamingChannel( TS3Api api ) {
-    sc.add( 4 );  // <-- Muss noch übergeben werden.
-    sc.add( 5 );  // <-- Muss noch übergeben werden.
+  public StreamingChannel( TS3Api api, Properties p ) {
+    for ( String s : p.getProperty( "streamingChannel" ).split( "," ) )
+      sc.add( Integer.parseInt( s.strip() ) );
     this.api = api;
+    this.p = p;
   }
 
   @Override
   public void run() {
-
-    api.getChannels().stream()
-        .filter( c -> sc.contains( c.getParentChannelId() ) )
-        .filter( c -> clientCount( c ) == 0 )
-        .forEach( c -> api.deleteChannel( c.getId() ) );
-
     api.getClients().stream()
         .filter( c -> sc.contains( c.getChannelId() ) )
         .forEach( this::doChannelWork );
@@ -38,17 +30,15 @@ public class StreamingChannel implements Runnable {
     Map<ChannelProperty, String> cp = new HashMap<>();
 
     cp.put( ChannelProperty.CPID, String.valueOf( c.getChannelId() ) );
+    cp.put( ChannelProperty.CHANNEL_FLAG_TEMPORARY, "1" );
 
-    int subChannel = api.createChannel( "Hallo", cp );
+    String channelName = p.getProperty( "streamingChannelName" )
+        .replace( "%name%", c.getNickname() );
+    int subChannel = api.createChannel( channelName , cp );
 
     api.moveClient( c.getId(), subChannel );
+    api.moveClient( api.whoAmI().getId(), Integer.parseInt( p.getProperty( "defaultChannel" ) ) );
 
   }
 
-  private long clientCount( Channel c){
-    return api.getClients().stream()
-        .filter( client -> client.getChannelId() == c.getId() )
-        .filter( client -> !client.isServerQueryClient() )
-        .count();
-  }
 }
