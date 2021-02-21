@@ -13,6 +13,7 @@ Discord und Teams die Möglichkeit bietet auf bestimmte Funktionen zuzugreifen.
   * <span style="color:#1C6DFF">**Teams:**</span>
     * Umfrage-Bot
 * **In bearbeitung:**
-  *
+  * Streaming-Channel
 * **Implementiert:**
-    * AFK-Mover
+  * AFK-Mover
+  * Bot-Mover

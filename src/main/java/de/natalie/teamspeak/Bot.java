@@ -46,8 +46,12 @@ public class Bot {
   }
 
   private void runSchedulers() {
-    ScheduledExecutorService afk_scheduler = Executors.newScheduledThreadPool( 1 );
-    afk_scheduler.scheduleAtFixedRate( new AfkMover( api ), 0, 2, TimeUnit.SECONDS );
+    ScheduledExecutorService scheduler = Executors.newScheduledThreadPool( 1 );
+    //scheduler.scheduleAtFixedRate( new AfkMover( api ), 0, 2, TimeUnit.SECONDS );
+    //scheduler.scheduleAtFixedRate( new BotMover( api ), 0, 2, TimeUnit.SECONDS );
+    scheduler.scheduleAtFixedRate( new StreamingChannel( api ), 0, 2, TimeUnit.SECONDS );
+
+
   }
 
 }
