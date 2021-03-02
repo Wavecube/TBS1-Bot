@@ -6,6 +6,9 @@ Discord und Teams die Möglichkeit bietet auf bestimmte Funktionen zuzugreifen.
 * **Ideen:**
   * <span style="color:#8899FF">**Discord:**</span>
     * Musik
+    * Umfrage
+    * Giveaway
+    * News
   * <span style="color:#00CFF2">**Teamspeak:**</span>
     * AFK-Mover
     * Bot-Mover
@@ -13,7 +16,7 @@ Discord und Teams die Möglichkeit bietet auf bestimmte Funktionen zuzugreifen.
   * <span style="color:#1C6DFF">**Teams:**</span>
     * Umfrage-Bot
 * **In bearbeitung:**
-  * Umfrage Bot (Discord)
+  * Giveaway Bot (Discord)
 * **Implementiert:**
   * Streaming-Channel
   * AFK-Mover
