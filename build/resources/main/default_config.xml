@@ -1,28 +1,47 @@
-<teamspeak>
-    <example_bot_1>
-        <!--Bot configuration-->
-        <host>192.168.2.109</host>
-        <port>10011</port>
-        <user>serveradmin</user>
-        <password>password</password>
-        <vServerId>1</vServerId>
-        <schedulerTiming>5</schedulerTiming>
+<config>
+    <teamspeak>
+        <example_bot_1>
+            <!--Bot configuration-->
+            <host>127.0.0.1</host>
+            <port>10011</port>
+            <user>serveradmin</user>
+            <password>password</password>
+            <vServerId>1</vServerId>
+            <schedulerTiming>1</schedulerTiming>
 
-        <!--AFK mover configuration-->
-        <afkMoverEnabled>false</afkMoverEnabled>
-        <afkChannel>0</afkChannel>
-        <afkTime>0</afkTime>
+            <!--AFK mover configuration-->
+            <afkMoverEnabled>false</afkMoverEnabled>
+            <afkChannel>0</afkChannel>
+            <afkTime>0</afkTime>
 
-        <!--Bot mover configuration-->
-        <botMoverEnabled>false</botMoverEnabled>
-        <botChannel>0</botChannel>
-        <botGroup>0</botGroup>
+            <!--Bot mover configuration-->
+            <botMoverEnabled>false</botMoverEnabled>
+            <botChannel>0</botChannel>
+            <botGroup>0</botGroup>
 
-        <!--Streaming channel configuration-->
-        <streamingChannelEnabled>false</streamingChannelEnabled>
-        <streamingChannelName>%name%'s channel</streamingChannelName>
-        <streamingChannel>
-            0, 0, 0
-        </streamingChannel>
-    </example_bot_1>
-</teamspeak>
+            <!--Streaming channel configuration-->
+            <streamingChannelEnabled>false</streamingChannelEnabled>
+            <streamingChannelName>%name%'s channel</streamingChannelName>
+            <streamingChannel>
+                0, 0, 0
+            </streamingChannel>
+        </example_bot_1>
+        <example_bot_2>
+            <!--Bot configuration-->
+            <host>127.0.0.1</host>
+            <port>10011</port>
+            <user>serveradmin</user>
+            <password>password</password>
+            <vServerId>1</vServerId>
+            <schedulerTiming>1</schedulerTiming>
+
+            <afkMoverEnabled>false</afkMoverEnabled>
+            <botMoverEnabled>false</botMoverEnabled>
+            <streamingChannelEnabled>false</streamingChannelEnabled>
+        </example_bot_2>
+    </teamspeak>
+
+    <discord>
+        <token>XX</token>
+    </discord>
+</config>

@@ -44,64 +44,67 @@ public class ConfigProcessor {
       throw new NullPointerException( "The config file does not exist." );
 
     doc.getDocumentElement().normalize();
+    Element root = (Element) doc.getElementsByTagName( "config" ).item( 0 );
 
-    processTsConf( doc.getElementsByTagName( "teamspeak" ) );
-    //processDcConf( doc.getElementsByTagName( "discord" ) );
-    //processTeamsConf( doc.getElementsByTagName( "teams" ) );
+    processTsConf( root );
+    processDcConf( root );
 
   }
 
-  private static void processTsConf( NodeList nl ) {
+  private static void processTsConf( Element root ) {
+    NodeList nl = root.getElementsByTagName( "teamspeak" );
+    if ( nl.getLength() != 0 ) {
 
-    NodeList nodes = nl.item( 0 ).getChildNodes();
-    List<Element> bots = new ArrayList<>();
+      Consumer<Element> c = e -> {
+        Properties p = new Properties();
+
+        p.put( "type", "teamspeak" );
+        p.put( "nickname", e.getTagName() );
+        nodesToElements( e.getChildNodes() ).forEach( element -> lp( p, element ) );
+
+        props.add( p );
+      };
+
+      nodesToElements( nl.item( 0 ).getChildNodes() ).forEach( c );
+    }
+    else
+      System.out.println( "No Teamspeak bots were created." );
+  }
+
+  private static void processDcConf( Element root ) {
+
+    NodeList nl = root.getElementsByTagName( "discord" );
+
+    switch ( nl.getLength() ) {
+      case 0 -> System.out.println( "No Discord bots were created." );
+      case 1 -> {
+        Properties p = new Properties();
+        p.put( "type", "discord" );
+        Consumer<Element> c = e -> p.put( e.getTagName(), e.getTextContent().strip() );
+        if ( nl.getLength() == 1 )
+          nodesToElements( nl.item( 0 ).getChildNodes() ).forEach( c );
+        else
+          throw new IllegalArgumentException( "Only one Discord config is allowed." );
+        p.forEach( ( o1, o2 ) -> System.out.println( o1 + " " + o2 ) );
+        props.add( p );
+      }
+      default -> throw new IllegalArgumentException( "There cant be more than one Discord bot." );
+    }
+  }
+
+  private static void lp( Properties p, Element e ) {
+    p.put( e.getTagName(), e.getTextContent().strip() );
+  }
+
+  private static List<Element> nodesToElements( NodeList nodes ) {
+    List<Element> elements = new ArrayList<>();
 
     for ( int ci = 0; ci < nodes.getLength(); ci++ ) {
       Node n = nodes.item( ci );
       if ( n instanceof Element )
-        bots.add( (Element) n );
+        elements.add( (Element) n );
     }
-
-    Consumer<Element> c = e -> {
-      Properties p = new Properties();
-
-      p.put( "type", "teamspeak" );
-      p.put( "nickname", e.getTagName() );
-
-      loadProp( p, e, "host" );
-      loadProp( p, e, "port" );
-      loadProp( p, e, "user" );
-      loadProp( p, e, "password" );
-      loadProp( p, e, "vServerId" );
-      loadProp( p, e, "schedulerTiming" );
-
-      loadProp( p, e, "afkMoverEnabled" );
-      loadProp( p, e, "afkChannel" );
-      loadProp( p, e, "afkTime" );
-
-      loadProp( p, e, "botMoverEnabled" );
-      loadProp( p, e, "botChannel" );
-      loadProp( p, e, "botGroup" );
-
-      loadProp( p, e, "streamingChannelEnabled" );
-      loadProp( p, e, "streamingChannelName" );
-      loadProp( p, e, "streamingChannel" );
-
-      props.add( p );
-    };
-
-    bots.forEach( c );
-
-  }
-
-  private static void loadProp( Properties p, Element e, String tag ) {
-    p.put( tag, e.getElementsByTagName( tag ).item( 0 ).getTextContent().strip() );
-  }
-
-  private static void processDcConf( NodeList nl ) {
-    if ( nl.getLength() != 1 )
-      throw new IllegalArgumentException( "Only one discord config is allowed." );
-
+    return elements;
   }
 
   private static void processTeamsConf( NodeList nl ) {
@@ -124,17 +127,21 @@ public class ConfigProcessor {
   }
 
   private static void runBot( Properties p ) {
+
     switch ( p.getProperty( "type" ) ) {
       case "teamspeak" -> new Bot( p );
-      case "discord" -> System.out.println( "ho" );
+      case "discord" -> new de.natalie.discord.Bot( p );
       case "teams" -> System.out.println( "hello" );
       default -> throw new IllegalArgumentException(
           p.getProperty( "type" ) + ", is not a valid bot type." );
     }
+
   }
 
   public static void run() {
+
     props.forEach( ConfigProcessor::runBot );
+
   }
 
 }
